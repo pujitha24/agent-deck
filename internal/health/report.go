@@ -298,8 +298,14 @@ func Format(s Summary) string {
 		for _, name := range remoteNames {
 			fmt.Fprintf(&b, "    remote %s latest outcome: %s\n", strconv.QuoteToASCII(name), strconv.QuoteToASCII(p.Latest.Remotes[name].Outcome))
 		}
+		overFDs := false
 		for _, flag := range p.Flags {
 			fmt.Fprintf(&b, "    %s\n", flag)
+			overFDs = overFDs || strings.HasPrefix(flag, "descriptor count exceeds budget")
+		}
+		if overFDs {
+			b.WriteString("    hint: each session holds open descriptors; stop or remove sessions you no longer need (agent-deck session stop <session> | agent-deck remove <session>), or restart agent-deck to release them.\n")
+			b.WriteString("    hint: if the count keeps growing after a restart, please report it with this output.\n")
 		}
 	}
 	return b.String()

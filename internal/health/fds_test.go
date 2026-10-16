@@ -101,6 +101,9 @@ func TestDescriptorBudgetBreachWithInjectedCount(t *testing.T) {
 	if !strings.Contains(text, "descriptors <512 + 16 per session") || strings.Contains(text, "unsupported") {
 		t.Fatalf("sampled budget misreported:\n%s", text)
 	}
+	if !strings.Contains(text, "hint: each session holds open descriptors") || !strings.Contains(text, "agent-deck session stop") {
+		t.Fatalf("over-budget report gives no remediation guidance:\n%s", text)
+	}
 }
 
 func TestReportSaysUnsupportedWhenPlatformCannotCountFDs(t *testing.T) {
